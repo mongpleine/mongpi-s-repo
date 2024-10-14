@@ -1,25 +1,27 @@
 // const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
-
-const coupangUrl = "https://www.coupang.com/np/search?page=1&filterSetByUser=true&channel=user&sorter=scoreDesc&listSize=200&q=선풍기";
-// const coupangUrl = "https://www.coupang.com/np/search?component=&q=%EC%84%A0%ED%92%8D%EA%B8%B0&channel=user";
+const fs = require('fs');
 
 const crawler = async () => {
     try {
+        let coupangUrl = "https://www.coupang.com/np/search?page=1&filterSetByUser=true&channel=user&sorter=scoreDesc&listSize=100&q=선풍기";
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: false,                                 // 실제 브라우저가 없는 서버환경에서는 true
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            // executablePath: '/usr/bin/google-chrome'         // 리눅스서버에서만 활성화 (크롬 경로지정)
         });
         const page = await browser.newPage();
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36')
         await page.goto(coupangUrl);
-
         const contents = await page.content();
-        let temp = await page.evaluate(() => {
-            let list = document.querySelector('.search-product-list');
-            let a = list.querySelectorAll('.search-product')
+        fs.writeFileSync(`../html/${+new Date()}.html`, contents);
+
+        let product_data_list = await page.evaluate(() => {
+            let search_product = document.querySelectorAll('ul.search-product-list > li.search-product');
             let result = [];
-            a.forEach(e => {
+            search_product.forEach(e => {
                 if (e.getAttribute('class') !== 'search-product  search-product__ad-badge') {
+                    console.log(e.getAttribute('class'));
                     result.push({
                         product_no: e.getAttribute('data-product-id'),
                         product_name: e.querySelector('.name').textContent
@@ -28,8 +30,6 @@ const crawler = async () => {
             })
             return result;
         })
-        console.log(temp);
-        console.log(temp.length);
 
         // const $ = cheerio.load(contents);
         // const $bodyList = $('ul.search-product-list li.search-product');
@@ -51,6 +51,9 @@ const crawler = async () => {
 crawler();
 
 /*
+centos 7에서 실행시 에러 발생함
+
+구버전 크롬 설치
 wget https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-123.0.6312.105-1.x86_64.rpm
 sudo yum -y localinstall google-chrome-stable-123.0.6312.105-1.x86_64.rpm
 rm -rf google-chrome-stable-123.0.6312.105-1.x86_64.rpm
