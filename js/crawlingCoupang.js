@@ -1,8 +1,8 @@
 // const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
 
-// const coupangUrl = "https://www.coupang.com/np/search?page=1&filterSetByUser=true&channel=user&sorter=scoreDesc&listSize=100&q=선풍기";
-const coupangUrl = "https://www.coupang.com/np/search?component=&q=%EC%84%A0%ED%92%8D%EA%B8%B0&channel=user";
+const coupangUrl = "https://www.coupang.com/np/search?page=1&filterSetByUser=true&channel=user&sorter=scoreDesc&listSize=200&q=선풍기";
+// const coupangUrl = "https://www.coupang.com/np/search?component=&q=%EC%84%A0%ED%92%8D%EA%B8%B0&channel=user";
 
 const crawler = async () => {
     try {
