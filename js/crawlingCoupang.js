@@ -21,7 +21,6 @@ const crawler = async () => {
             let result = [];
             search_product.forEach(e => {
                 if (e.getAttribute('class') !== 'search-product  search-product__ad-badge') {
-                    console.log(e.getAttribute('class'));
                     result.push({
                         product_no: e.getAttribute('data-product-id'),
                         product_name: e.querySelector('.name').textContent
